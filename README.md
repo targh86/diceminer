@@ -1,0 +1,2 @@
+# diceminer
+Dicebot Miner Script

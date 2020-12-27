@@ -2,29 +2,32 @@
     print("[INIT] Setting Variables...")
 
     extwallet = "bc1qe7lfanpd53gdkkxkuv5rfzdawl75uj7cthyr0f"
+    startbalance   = balance
 
     basechance     = 58
-    basebet        = balance * (8 / 10000)
-    winmultiplier  = 0.95
-    lossmultiplier = 2.7255
+    winmultiplier  = 0.90
+    lossmultiplier = 3.7255
     bethigh        = true        
-    startbalance   = balance
-    sessionprofit  = 0
 
-    profitmax  = basebet*100
-    betceiling = basebet*100
-    betfloor   = basebet/2.5
+    basebet = ((balance/2) * (8/(basechance*3)))
+    -- basebet       = 0.00000004
+    -- currency = "na"
+    sessionprofit = 0
+
+    profitmax  = basebet*500
+    betceiling = basebet*60
+    betfloor   = basebet/3
 
 
     nextbet     = basebet
     lastgoodbet = basebet
-    chance      = basechance
+    chance      = basechance*1.1
     enablezz    = false      
     enablesrc   = true     
     reset       = false
 
     spincount = 0
-    spinlimit = 50
+    spinlimit = 40
 
     plummetthresh  = -3
     inplummet      = false
@@ -36,15 +39,14 @@
     inrecmax        = 3
     inrecmultiplier = 1.5
 
-    minbtcbet = 0.00000002
-
+    minbtcbet = 0.00000003
+    -- checkbtc()
+    
     print("Done...")
     print(" ")
     print("===== SUMMARY =====")
-    print("Base Bet: "..printval(basebet).."  |  Currency: "..currency)
+    print("Base Bet: "..basebet.."  |  Currency: "..currency)
     print("External Wallet: "..extwallet)
-    print("Chance: "..chance.." | Next Bet: "..printval(nextbet).." "..currency.." | Profit Thresh: "..printval(profitmax))
-    print("Bet Ceiling: "..printval(betceiling).."  |  Bet Floor: "..printval(betfloor).."  |  Plummet Bank: "..printval(inplumbank))
     print("Win Multiplier: "..winmultiplier.."  |  Loss Multiplier: "..lossmultiplier)
     print("====================")
 
@@ -56,6 +58,9 @@
     recoverycheck()
     plummetcheck()
     checklimits()
+    checkblowbank()
+    checkreset()
+    checkbtc()
     nextbetsummary()
 
     end
@@ -97,9 +102,9 @@
             print("[LOSS]  Result Profit: "..currentprofit.."  |  Current Streak: "..currentstreak)
             nextbet = (previousbet*lossmultiplier)
             print("Multiplying Bet: "..lossmultiplier.."x")
-            chance = chance*1.15
-            if chance > 90 then
-                chance = 90
+            chance = chance*1.175
+            if chance > 95 then
+                chance = 95
             end
             print("Increasing Chance to: "..chance)
         elseif (win == true) then
@@ -107,13 +112,20 @@
             if (currentstreak == 1) then
             print("       Resuming Bet Amt: "..lastgoodbet)
                 nextbet = lastgoodbet
+               -- reset   = true
             print("       Resetting Bet Chance: "..basechance)
                 chance = basechance
             else
             lastgoodbet = previousbet
             nextbet = (previousbet*winmultiplier)
             print("Multiplying Bet: "..winmultiplier.."x")
+            chance = chance/1.3
+            if chance < 58 then
+                chance = 58
             end
+            print("Dropping Chance to: "..chance)
+
+        end
         end
     end
 
@@ -138,7 +150,7 @@
             -- Check if the bet floor has been hit
             if nextbet < betfloor then
                 print("Notice: Bet Floor Hit!")
-                nextbet = betfloor
+                nextbet = (betfloor*2.5)
                 print("Next bet set to: "..nextbet)
             end
             
@@ -164,21 +176,6 @@
                 reset = true
             end
             
-            
-            if (reset == true) then
-                print(" ")
-                print("[NOTICE] RESETTING ALL")
-                print("=============================>")
-                nextbet   = basebet
-                spincount = 0
-                reset     = false 
-                resetseed()
-            end
-
-            if (currency == "BTC") and (nextbet < minbtcbet) then
-                print("Notice: Minimum BTC Bet reached.  Setting to "..minbtcbet)
-                nextbet = minbtcbet
-            end
         else
                 print("[NOTICE] Skipping Threshold Checks During Recovery")
         end
@@ -256,17 +253,61 @@
             print("     |---> Next bet now set to "..nextbet)
             print(" ")
         end
-        
+
+    end        
+    
+    
     ------------------------------------------------------
     --------------- UPDATE BASE BET MODE -----------------
     ------------------------------------------------------
 
         function updatebasebet()
-            basebet = balance * (8 / 10000)
+            basebet       = ((balance) * (8/(basechance*1.3)))
             sessionprofit = (balance - startbalance)
         end
-       
-    end
+    
+
+    ------------------------------------------------------
+    ---------------- CHECK RESET STATUS ------------------
+    ------------------------------------------------------
+        function checkreset()
+            if (reset == true) then
+                print(" ")
+                print("[NOTICE] RESETTING ALL")
+                print("=============================>")
+                nextbet   = basebet
+                spincount = 0
+                reset     = false 
+                resetseed()
+            end
+        end
+
+
+    
+        function checkbtc()
+           if (currency == "btc") and (nextbet < minbtcbet) then
+                print("Notice: Minimum BTC Bet reached.  Setting to "..minbtcbet)
+                nextbet = minbtcbet
+           end
+        end
+        
+        
+    ------------------------------------------------------
+    --------------- UPDATE BASE BET MODE -----------------
+    ------------------------------------------------------
+        function checkblowbank()
+            if (((nextbet > (balance/2)*0.75)) and (balance < 0.5)) then
+                print('[ALERT] - Next Bet more than 75% of balance (Under 0.5)- Setting to 75%')
+                nextbet = ((balance/2)*0.75)
+            end
+
+            if (((nextbet > (balance/2)*0.33)) and (balance >= 0.5)) then
+                print('[ALERT] - Next Bet more than 33% of balance (Over 0.5)- Setting to 33%')
+                nextbet = ((balance/2)*0.33)
+            end
+
+        end
+
 
     ------------------------------------------------------
     ------------ ROUND FUNCTION FOR CONSOLE --------------

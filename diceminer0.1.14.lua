@@ -5,11 +5,11 @@
     startbalance   = balance
 
     basechance     = 58
-    winmultiplier  = 0.90
+    winmultiplier  = 0.95
     lossmultiplier = 3.7255
     bethigh        = true        
 
-    basebet = ((balance/2) * (8/(basechance*3)))
+    basebet = (((balance/2) * (8/(basechance*3)))/10)
     -- basebet       = 0.00000004
     -- currency = "na"
     sessionprofit = 0
@@ -21,7 +21,7 @@
 
     nextbet     = basebet
     lastgoodbet = basebet
-    chance      = basechance*1.1
+    chance      = basechance
     enablezz    = false      
     enablesrc   = true     
     reset       = false
@@ -102,7 +102,7 @@
             print("[LOSS]  Result Profit: "..currentprofit.."  |  Current Streak: "..currentstreak)
             nextbet = (previousbet*lossmultiplier)
             print("Multiplying Bet: "..lossmultiplier.."x")
-            chance = chance*1.175
+            chance = chance*1.225
             if chance > 95 then
                 chance = 95
             end

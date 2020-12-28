@@ -8,15 +8,15 @@
     winmultiplier  = 0.95
     lossmultiplier = 3.7255
     bethigh        = true        
-    betdiv         = 100        -- how much to divide the bet by (higher number, lower bet. Best options are 1, 10, 100, 1000)
+    betdiv         = 50        -- how much to divide the bet by (higher number, lower bet. Best options are 1, 10, 100, 1000)
 
     basebet = (((balance/2) * (8/(basechance*3)))/betdiv)
     -- basebet       = 0.00000004
     -- currency = "na"
     sessionprofit = 0
 
-    profitmax  = basebet*500
-    betceiling = basebet*100
+    profitmax  = basebet*50
+    betceiling = basebet*200
     betfloor   = basebet/3
 
 
@@ -25,7 +25,7 @@
     chance      = basechance
     enablezz    = false      
     enablesrc   = true     
-    reset       = false
+    doreset       = false
 
     spincount = 0
     spinlimit = 40
@@ -103,7 +103,7 @@
             print("[LOSS]  Result Profit: "..currentprofit.."  |  Current Streak: "..currentstreak)
             nextbet = (previousbet*lossmultiplier)
             print("Multiplying Bet: "..lossmultiplier.."x")
-            chance = chance*1.225
+            chance = chance*1.1225
             if chance > 95 then
                 chance = 95
             end
@@ -157,14 +157,14 @@
             -- Check Profit Threshold
             if (currentprofit > profitmax) then
                 print("[ALERT] PROFIT THRESHOLD REACHED")
-                reset = true
+                doreset = true
             end
 
 
             -- Check Streak
             if (currentstreak == 6) then
                 print('[ALERT] - Streak Trigger Reached - Resetting Seed')
-                reset = true
+                doreset = true
             end
 
             -- Check Spins
@@ -173,7 +173,7 @@
                 print("SPIN COUNT: "..spincount.." / "..spinlimit)
             else    
                 print("[ALERT] SPIN LIMIT REACHED - RESETTING")
-                reset = true
+                doreset = true
             end
             
         else
@@ -219,7 +219,7 @@
                 print("     |---> High Stakes Finished - Restoring bet to banked value of "..inplumbank)
                 nextbet   = basebet
                 inrecover = false
-                reset     = true
+                doreset     = true
             end
         end
     end
@@ -264,6 +264,9 @@
         function updatebasebet()
             basebet       = (((balance/2) * (8/(basechance*3)))/betdiv)
             sessionprofit = (balance - startbalance)
+            profitmax  = basebet*50
+            betceiling = basebet*200
+            betfloor   = basebet/3
         end
     
 
@@ -271,13 +274,14 @@
     ---------------- CHECK RESET STATUS ------------------
     ------------------------------------------------------
         function checkreset()
-            if (reset == true) then
+            if (doreset == true) then
                 print(" ")
                 print("[NOTICE] RESETTING ALL")
                 print("=============================>")
+                updatebasebet()
                 nextbet   = basebet
                 spincount = 0
-                reset     = false 
+                doreset     = false 
                 resetseed()
             end
         end
@@ -296,14 +300,14 @@
     --------------- UPDATE BASE BET MODE -----------------
     ------------------------------------------------------
         function checkblowbank()
-            if (((nextbet > ((balance/2)/betdiv)*0.75)) and (balance < 0.5)) then
-                print('[ALERT] - Next Bet more than 75% of balance (Under 0.5)- Setting to 75%')
-                nextbet = (((balance/2)/betdiv)*0.75)
+            if (((nextbet > ((balance)/betdiv)*0.85)) and (balance < 5)) then
+                print('[ALERT] - Next Bet more than 85% of balance (Under 5)- Setting to 85%')
+                nextbet = (((balance)/betdiv)*0.85)
             end
 
-            if (((nextbet > ((balance/2)/betdiv)*0.33)) and (balance >= 0.5)) then
-                print('[ALERT] - Next Bet more than 33% of balance (Over 0.5)- Setting to 33%')
-                nextbet = (((balance/2)/betdiv)*0.33)
+            if (((nextbet > ((balance)/betdiv)*0.80)) and (balance >= 5)) then
+                print('[ALERT] - Next Bet more than 80% of balance (Over 5)- Setting to 80%')
+                nextbet = (((balance)/betdiv)*0.80)
             end
 
         end

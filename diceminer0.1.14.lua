@@ -8,14 +8,15 @@
     winmultiplier  = 0.95
     lossmultiplier = 3.7255
     bethigh        = true        
+    betdiv         = 100        -- how much to divide the bet by (higher number, lower bet. Best options are 1, 10, 100, 1000)
 
-    basebet = (((balance/2) * (8/(basechance*3)))/10)
+    basebet = (((balance/2) * (8/(basechance*3)))/betdiv)
     -- basebet       = 0.00000004
     -- currency = "na"
     sessionprofit = 0
 
     profitmax  = basebet*500
-    betceiling = basebet*60
+    betceiling = basebet*100
     betfloor   = basebet/3
 
 
@@ -120,8 +121,8 @@
             nextbet = (previousbet*winmultiplier)
             print("Multiplying Bet: "..winmultiplier.."x")
             chance = chance/1.3
-            if chance < 58 then
-                chance = 58
+            if chance < basechance then
+                chance = basechance
             end
             print("Dropping Chance to: "..chance)
 
@@ -262,7 +263,7 @@
     ------------------------------------------------------
 
         function updatebasebet()
-            basebet       = ((balance) * (8/(basechance*1.3)))
+            basebet       = (((balance/2) * (8/(basechance*3)))/betdiv)
             sessionprofit = (balance - startbalance)
         end
     
@@ -296,14 +297,14 @@
     --------------- UPDATE BASE BET MODE -----------------
     ------------------------------------------------------
         function checkblowbank()
-            if (((nextbet > (balance/2)*0.75)) and (balance < 0.5)) then
+            if (((nextbet > ((balance/2)/betdiv)*0.75)) and (balance < 0.5)) then
                 print('[ALERT] - Next Bet more than 75% of balance (Under 0.5)- Setting to 75%')
-                nextbet = ((balance/2)*0.75)
+                nextbet = (((balance/2)/betdiv)*0.75)
             end
 
-            if (((nextbet > (balance/2)*0.33)) and (balance >= 0.5)) then
+            if (((nextbet > ((balance/2)/betdiv)*0.33)) and (balance >= 0.5)) then
                 print('[ALERT] - Next Bet more than 33% of balance (Over 0.5)- Setting to 33%')
-                nextbet = ((balance/2)*0.33)
+                nextbet = (((balance/2)/betdiv)*0.33)
             end
 
         end

@@ -110,10 +110,9 @@
             print("Increasing Chance to: "..chance)
         elseif (win == true) then
             print("[WIN]  Result Profit: "..currentprofit.."  |  Current Streak: "..currentstreak)
-            if (currentstreak == 1) then
+            if (currentstreak == 1) and lastgoodbet > previousbet then
             print("       Resuming Bet Amt: "..lastgoodbet)
                 nextbet = lastgoodbet
-               -- reset   = true
             print("       Resetting Bet Chance: "..basechance)
                 chance = basechance
             else

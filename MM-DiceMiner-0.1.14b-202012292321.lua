@@ -48,7 +48,7 @@ function loadUserVariables()
 	chancemax		 = 90			-- maximum chance level (%) - stops script from making no profit from spins. [Default 90]
 	
     bethigh          = true			-- bet high end of scale.
-    betdiv           = 10000			-- pushes back decimal place of bet (eg 1000 will make a bet of 1 become 0.0001) [Default 1000]
+    betdiv           = 1000			-- pushes back decimal place of bet (eg 1000 will make a bet of 1 become 0.0001) [Default 1000]
 									-- Suggested Options: 1, 10, 100, 1000, 10000, 100000)
 
     spinlimit = 45					-- number of sequential spins before the script forces an unconditional reset. [Default 50]
@@ -89,22 +89,21 @@ end
     ------------------------------------------------------
         function updatebasebet()
 			print("[INFO] Updating basebet and bet parameters.")
-			printwhitespace(1)
             basebet       = (((balance/2) * (8/(basechance*5)))/betdiv)
 			print("  Base Bet: "..printval(basebet))
 
             sessionprofit = (balance - startbalance)
 			print("  - Session Profit: "..printval(sessionprofit))
 
-			profitmax  = basebet*100
-            -- profitmax  = balance/5
+			--profitmax  = basebet*100
+            profitmax  = balance/10
 			print("  - Profit Max: "..printval(profitmax))			
 
 			-- lossmax  = basebet*100
 			lossmax = (0-((balance/2)))
 			print("  - Loss Max: "..printval(lossmax))
 
-			betceiling = basebet*100
+			betceiling = basebet*750
 			-- betceiling = balance/3
 			print("  - Bet Ceiling: "..printval(betceiling))
 
@@ -117,9 +116,6 @@ end
     ---------- DISPLAY BET INFORMATION TO CONSOLE --------
     ------------------------------------------------------
     function displaybetinfo()
-	printwhitespace(25)
-			print("=======================================")
-			print(" ")
 		if (win == false) then        
 			print("========= L O S S =========")
 		elseif (win == true) then
@@ -141,7 +137,8 @@ end
     function nextbetsummary()
         -- Output what the next bet is going to be
         print("NEXT BET: "..printval(nextbet).." at "..chance.."% chance")
-		printwhitespace(10)
+		printwhitespace(5)
+		print("[INFO] STARTING NEXT BET...")
     end
     ------------------------------------------------------
     --------------- DETERMINE WIN / LOSS -----------------
@@ -192,7 +189,7 @@ end
             if nextbet > betceiling then
                 print("    BET CEILING HIT - CAPPING BET")
                 updatebasebet()
-				nextbet = (betceiling*0.5)
+				nextbet = betceiling
             end
 
             -- Check if the bet floor has been hit
@@ -204,13 +201,13 @@ end
             -- Check Profit Threshold
             if (currentprofit > profitmax) then
                 print("    PROFIT MAX THRESHOLD HIT - RESETTING")
-   				doscriptreset(0,true)
+   				doscriptreset(0,false)
             end
 
             -- Check Loss Threshold
             if (currentprofit < lossmax) then
-                print("    PROFIT LOSS THRESHOLD HIT - RESETTING LGB")
-				doscriptreset(2,true)
+                print("    PROFIT LOSS THRESHOLD HIT - RESETTING")
+				doscriptreset(0,false)
             end
 
             -- Check Streak
@@ -355,33 +352,30 @@ end
 			print("   ")
 				
 			if (resettype == 0) then			-- Rolling Variables
-					print("     Rolling Reset...")
+					print("  - Rolling Reset...")
 					nextbet = basebet
-					print("     Next Bet: "..nextbet)
+					print("  - Next Bet: "..nextbet)
 					firstbet = basebet
-					print("     Initial Bet: "..firstbet)
+					print("  - Initial Bet: "..firstbet)
 					chance = basechance
-					print("     Chance Reset: "..chance)
+					print("  - Chance Reset: "..chance)
 					lastgoodbet = basebet
-					print("     Restting Last Good Bet: "..lastgoodbet)
+					print("  - Restting Last Good Bet: "..lastgoodbet)
 			end
 				
 			if (resettype == 1) then			-- Reset All (Full Init)
-					print("     Full Init Reset...")
+					print("  - Full Init Reset...")
 					nextbet = basebet
-					print("     Next Bet: "..nextbet)
+					print("  - Next Bet: "..nextbet)
 					firstbet = basebet
-					print("     Initial Bet: "..firstbet)
+					print("  - Initial Bet: "..firstbet)
 					chance = basechance
-					print("     Chance Reset: "..chance)
+					print("  - Chance Reset: "..chance)
 					lastgoodbet = basebet
-					print("     Restting Last Good Bet: "..lastgoodbet)
-
+					print("  - Restting Last Good Bet: "..lastgoodbet)
 					resetseed()
-					printwhitespace(2)
 					print("  !! RE-INITIALIZE SCRIPT... LOADING... ")
 					initscript()
-					printwhitespace(2)
 					print("  !! RE-INITIALIZE SCRIPT COMPLETED.")
 			end		
 		

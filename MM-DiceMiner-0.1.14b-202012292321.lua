@@ -43,24 +43,24 @@ function loadUserVariables()
 	
     basechance       = 58			-- what bet chance % you want to use as the base %
     winmultiplier    = 0.95			-- how much to multiply bets by when you win a roll.  [Default 0.95]  HIGHLY RECOMMEND a value < 1
-    lossmultiplier   = 2.7255		-- how much to multiply bets by when you lose a roll.  [Default 2.7255]
-	chancemultiplier = 1.175		-- how much to multiply the chance by (increase) when you lose a roll.  [Default `1.25]
+    lossmultiplier   = 3.7255		-- how much to multiply bets by when you lose a roll.  [Default 2.7255]
+	chancemultiplier = 1.275		-- how much to multiply the chance by (increase) when you lose a roll.  [Default `1.25]
 	chancemax		 = 90			-- maximum chance level (%) - stops script from making no profit from spins. [Default 90]
 	
     bethigh          = true			-- bet high end of scale.
-    betdiv           = 1000			-- pushes back decimal place of bet (eg 1000 will make a bet of 1 become 0.0001) [Default 1000]
+    betdiv           = 10000			-- pushes back decimal place of bet (eg 1000 will make a bet of 1 become 0.0001) [Default 1000]
 									-- Suggested Options: 1, 10, 100, 1000, 10000, 100000)
 
-    spinlimit = 40					-- number of sequential spins before the script forces an unconditional reset. [Default 50]
+    spinlimit = 45					-- number of sequential spins before the script forces an unconditional reset. [Default 50]
 
     plummetthresh  = -3				-- number of losses before script declares a plummet. [Default -3]  (MUST be negative and < -1 )
 
     inrecmax        = 3				-- number of recovery spins to do after a plummet.  (Don't get carried away here, these spins are exempt from
 									-- the rules of the script.  They are hard, fast spins to try and claw back - but with no safety.)  [Default 3]
 
-    inrecmultiplier = 1.5			-- recovery mode multiplier
+    inrecmultiplier = 1.2			-- recovery mode multiplier
 
-    minbtcbet = 0.00000004			-- absolute minimum bet for BTC bets - this stops the script from bugging out at 0.00000001btc
+    minbtcbet = 0.00000005			-- absolute minimum bet for BTC bets - this stops the script from bugging out at 0.00000001btc
 									-- minimum value is 0.00000003  [Default 0.00000004]   You may need to increase this if you have
 									-- your chancemax set too high.  Experiment and test.
 
@@ -91,22 +91,26 @@ end
 			printwhitespace(1)
 			print("[INFO] Updating basebet and bet parameters.")
 			printwhitespace(1)
-            basebet       = (((balance/2) * (8/(basechance*3)))/betdiv)
+            basebet       = (((balance/2) * (8/(basechance*5)))/betdiv)
 			print("  Set Base Bet: "..printval(basebet))
 
             sessionprofit = (balance - startbalance)
 			print("  Set Session Profit: "..printval(sessionprofit))
 
-            profitmax  = balance/5
+			profitmax  = basebet*100
+            -- profitmax  = balance/5
 			print("  Set Profit Max: "..printval(profitmax))			
 
-			lossmax = (0-((balance/2)))
+			lossmax  = basebet*100
+			-- lossmax = (0-((balance/2)))
 			print("  Set Loss Max: "..printval(lossmax))
 
-            betceiling = balance/3
+			betceiling = basebet*100
+			-- betceiling = balance/3
 			print("  Set Bet Ceiling: "..printval(betceiling))
 
-            betfloor   = firstbet/3
+			betfloor   = basebet/2.5
+            -- betfloor   = firstbet/3
 			print("  Set Bet Floor: "..printval(betfloor))
 			print("[INFO] Finished updating basebet and bet parameters.")
 			printwhitespace(2)
@@ -358,6 +362,8 @@ end
 					print("     Next Bet: "..nextbet)
 					firstbet = basebet
 					print("     Initial Bet: "..firstbet)
+					chance = basechance
+					print("     Chance Reset: "..chance)
 					lastgoodbet = basebet
 					print("     Restting Last Good Bet: "..lastgoodbet)
 			end
@@ -368,6 +374,8 @@ end
 					print("     Next Bet: "..nextbet)
 					firstbet = basebet
 					print("     Initial Bet: "..firstbet)
+					chance = basechance
+					print("     Chance Reset: "..chance)
 					lastgoodbet = basebet
 					print("     Restting Last Good Bet: "..lastgoodbet)
 
@@ -386,6 +394,8 @@ end
 					print("     Next Bet: "..nextbet)
 					firstbet = lastgoodbet
 					print("     Initial Bet: "..firstbet)
+					chance = basechance
+					print("     Chance Reset: "..chance)
 					basebet = lastgoodbet
 					firstbet = lastgoodbet
 					doresetlgb = false

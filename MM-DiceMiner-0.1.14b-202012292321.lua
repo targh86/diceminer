@@ -88,32 +88,30 @@ end
     --------------- UPDATE BASE BET MODE -----------------
     ------------------------------------------------------
         function updatebasebet()
-			printwhitespace(1)
 			print("[INFO] Updating basebet and bet parameters.")
 			printwhitespace(1)
             basebet       = (((balance/2) * (8/(basechance*5)))/betdiv)
-			print("  Set Base Bet: "..printval(basebet))
+			print("  Base Bet: "..printval(basebet))
 
             sessionprofit = (balance - startbalance)
-			print("  Set Session Profit: "..printval(sessionprofit))
+			print("  - Session Profit: "..printval(sessionprofit))
 
 			profitmax  = basebet*100
             -- profitmax  = balance/5
-			print("  Set Profit Max: "..printval(profitmax))			
+			print("  - Profit Max: "..printval(profitmax))			
 
-			lossmax  = basebet*100
-			-- lossmax = (0-((balance/2)))
-			print("  Set Loss Max: "..printval(lossmax))
+			-- lossmax  = basebet*100
+			lossmax = (0-((balance/2)))
+			print("  - Loss Max: "..printval(lossmax))
 
 			betceiling = basebet*100
 			-- betceiling = balance/3
-			print("  Set Bet Ceiling: "..printval(betceiling))
+			print("  - Bet Ceiling: "..printval(betceiling))
 
 			betfloor   = basebet/2.5
             -- betfloor   = firstbet/3
-			print("  Set Bet Floor: "..printval(betfloor))
+			print("  - Bet Floor: "..printval(betfloor))
 			print("[INFO] Finished updating basebet and bet parameters.")
-			printwhitespace(2)
         end
     ------------------------------------------------------
     ---------- DISPLAY BET INFORMATION TO CONSOLE --------
@@ -479,20 +477,28 @@ end
     print(" (TRX): "..extwallettrx)
 	print(" ")
 
-	if currency then													-- Display in use currency.
-		print("Crypto Currency In Use: "..currency)
+	if not !currency then													-- Display in use currency.
+		print("[INFO] Crypto Currency In Use: "..currency)
 	end
 
-	print("Setting Startup Parameters")
-	firstbet    = basebet							-- Sets the value for first bet of the session.
-    nextbet     = basebet							-- Prepares next (first) bets value.
-    lastgoodbet = basebet							-- Loads base bet as last good bet until one is set.
+	print("[INFO] Setting Startup Parameters")
+	firstbet    = 0									-- Sets the value for first bet of the session.
+    nextbet     = 0									-- Prepares next (first) bets value.
+    lastgoodbet = 0									-- Loads base bet as last good bet until one is set.
+
     chance      = basechance						-- Sets the base chance as the next chance
+
     enablezz    = false								-- Allow       
     enablesrc   = false     						-- Use Advanced options from Dicebot
     doreset     = false
+
 	updatebasebet()									-- Update basebet and other rolling parameters.
 
+													--------------------------------------------------
+	nextbet = basebet								-- Re-set bet parameter after
+	firstbet = basebet								-- update function (required for initial startup)
+	lastgoodbet = basebet							--------------------------------------------------
+	
     print("Next: "..printval(nextbet).." | LGB: "..printval(lastgoodbet).." | Chance:"..chance)
 
 
@@ -504,13 +510,11 @@ end
     inrecover       = false
     inrecspin       = 0
     
-    print("Done...")
-    print(" ")
-    print("===== SUMMARY =====")
-    print("Base Bet: "..printval(basebet).."  |  Currency: "..currency)
-    print("External Wallet: "..extwalletbtc)
-    print("Win Multiplier: "..winmultiplier.."  |  Loss Multiplier: "..lossmultiplier)
-    print("====================")
+    print("[INFO] Initialization Completed...")
+    print("  SUMMARY:")
+    print("  Base Bet: "..printval(basebet).."  |  Currency: "..currency)
+    print("  External Wallet: "..extwalletbtc)
+    print("  Win Multiplier: "..winmultiplier.."  |  Loss Multiplier: "..lossmultiplier)
 	printwhitespace(5)
 	end
     ------------------------------------------------------

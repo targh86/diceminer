@@ -502,7 +502,7 @@ end
 					resetseed()
 				end
 			end
-			
+		chancemoderand()						-- re-determines the chance mode.
 		print("[INFO] Reset Complete")
 		printwhitespace(2)
 	end
@@ -592,7 +592,7 @@ end
 	if (math.random(0,100) > 49.99) then chancerandsethigh = true end
 	chancerandseed = ((((math.random(0,(100*basechance))) + (math.random(0,(100*basechance)))) / 2) / basechance)
 	print("[INFO] Chance Mode Roll:  Randomly generating seed: "..chancerandseed.."  |  Bet High: "..tostring(chancerandsethigh))
-	if (chancerandseed > 49.99) and (chancerandsethigh == true) then chancemode = 2 else chancemode =1 end
+	if (chancerandseed > 39.99) and (chancerandsethigh == true) then chancemode = 2 else chancemode = 1 end
 	if (chancemode == 1) then print("[INFO] Chance Mode Roll:  Selected Chance Mode: Multiplier") else print("[INFO] Chance Mode Roll:  Selected Chance Mode: Matrix") end
 	end
 	
